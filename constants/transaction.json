@@ -1,119 +1,139 @@
 [
   {
+    "id": 1,
     "amount": 50.75,
     "date": "2023-10-01",
     "description": "Grocery Shopping",
     "type": "debit"
   },
   {
+    "id": 2,
     "amount": 1500.0,
     "date": "2023-10-02",
     "description": "Salary",
     "type": "credit"
   },
   {
+    "id": 3,
     "amount": 200.0,
     "date": "2023-10-03",
     "description": "Electricity Bill",
     "type": "debit"
   },
   {
+    "id": 4,
     "amount": 75.0,
     "date": "2023-10-04",
     "description": "Dinner",
     "type": "debit"
   },
   {
+    "id": 5,
     "amount": 300.0,
     "date": "2023-10-05",
     "description": "Freelance Work",
     "type": "credit"
   },
   {
+    "id": 6,
     "amount": 100.0,
     "date": "2023-10-06",
     "description": "Internet Bill",
     "type": "debit"
   },
   {
+    "id": 7,
     "amount": 50.0,
     "date": "2023-10-07",
     "description": "Gym Membership",
     "type": "debit"
   },
   {
+    "id": 8,
     "amount": 200.0,
     "date": "2023-10-08",
     "description": "Gift",
     "type": "credit"
   },
   {
+    "id": 9,
     "amount": 30.0,
     "date": "2023-10-09",
     "description": "Taxi",
     "type": "debit"
   },
   {
+    "id": 10,
     "amount": 500.0,
     "date": "2023-10-10",
     "description": "Bonus",
     "type": "credit"
   },
   {
+    "id": 11,
     "amount": 60.0,
     "date": "2023-10-11",
     "description": "Movie Tickets",
     "type": "debit"
   },
   {
+    "id": 12,
     "amount": 100.0,
     "date": "2023-10-12",
     "description": "Dining Out",
     "type": "debit"
   },
   {
+    "id": 13,
     "amount": 250.0,
     "date": "2023-10-13",
     "description": "Freelance Payment",
     "type": "credit"
   },
   {
+    "id": 14,
     "amount": 40.0,
     "date": "2023-10-14",
     "description": "Books",
     "type": "debit"
   },
   {
+    "id": 15,
     "amount": 75.0,
     "date": "2023-10-15",
     "description": "Clothing",
     "type": "debit"
   },
   {
+    "id": 16,
     "amount": 150.0,
     "date": "2023-10-16",
     "description": "Consulting Fee",
     "type": "credit"
   },
   {
+    "id": 17,
     "amount": 20.0,
     "date": "2023-10-17",
     "description": "Coffee",
     "type": "debit"
   },
   {
+    "id": 18,
     "amount": 100.0,
     "date": "2023-10-18",
     "description": "Groceries",
     "type": "debit"
   },
   {
+    "id": 19,
     "amount": 200.0,
     "date": "2023-10-19",
     "description": "Freelance Work",
     "type": "credit"
   },
   {
+    "id": 20,
     "amount": 50.0,
     "date": "2023-10-20",
     "description": "Fuel",
