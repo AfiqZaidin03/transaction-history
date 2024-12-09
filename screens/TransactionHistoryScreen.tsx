@@ -6,17 +6,21 @@ import {
   FlatList,
   Image,
   ScrollView,
+  TouchableOpacity,
 } from "react-native";
 import transactions from "@/constants/transaction.json";
+import { useNavigation } from "@react-navigation/native";
+import { StackNavigationProp } from "@react-navigation/stack";
+import { RootStackParamList, Transaction } from "@/types/transaction";
 
-type Transaction = {
-  amount: number;
-  date: string;
-  description: string;
-  type: "debit" | "credit";
-};
+type TransactionHistoryScreenNavigationProp = StackNavigationProp<
+  RootStackParamList,
+  "TransactionHistory"
+>;
 
 const TransactionHistoryScreen: React.FC = () => {
+  const navigation = useNavigation<TransactionHistoryScreenNavigationProp>();
+
   const renderItem = ({ item }: { item: Transaction }) => (
     <View style={styles.transactionItem}>
       <View style={styles.transactionDetails}>
@@ -28,6 +32,10 @@ const TransactionHistoryScreen: React.FC = () => {
       </Text>
     </View>
   );
+
+  const handleTransactionPress = (transaction: Transaction) => {
+    navigation.navigate("TransactionDetail", { transaction });
+  };
 
   return (
     <View style={styles.container}>
@@ -76,8 +84,12 @@ const TransactionHistoryScreen: React.FC = () => {
         <Text style={styles.sectionTitle}>Transaction History</Text>
         <FlatList
           data={transactions as Transaction[]}
-          renderItem={renderItem}
-          keyExtractor={(item, index) => index.toString()}
+          renderItem={({ item }) => (
+            <TouchableOpacity onPress={() => handleTransactionPress(item)}>
+              {renderItem({ item })}
+            </TouchableOpacity>
+          )}
+          keyExtractor={(item) => item.id.toString()}
           style={styles.transactionList}
         />
       </View>
