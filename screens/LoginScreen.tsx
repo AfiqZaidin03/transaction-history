@@ -35,20 +35,13 @@ const LoginScreen: React.FC<LoginScreenProps> = () => {
     console.log("Fallback to default login");
   };
 
-  interface AlertComponentProps {
-    title: string;
-    message: string;
-    btnTxt: string;
-    btnFunc: () => void;
-  }
-
-  const alertComponent = ({
-    title,
-    message,
-    btnTxt,
-    btnFunc,
-  }: AlertComponentProps) => {
-    return Alert.alert(title, message, [{ text: btnTxt, onPress: btnFunc }], {
+  const showAlert = (
+    title: string,
+    message: string,
+    btnTxt: string,
+    btnFunc: () => void
+  ) => {
+    Alert.alert(title, message, [{ text: btnTxt, onPress: btnFunc }], {
       cancelable: false,
     });
   };
@@ -57,29 +50,24 @@ const LoginScreen: React.FC<LoginScreenProps> = () => {
     const isBiometricAvailable = await LocalAuthentication.hasHardwareAsync();
 
     if (!isBiometricAvailable) {
-      return alertComponent({
-        title: "Please enter your credentials",
-        message: "Biometric authentication is not supported",
-        btnTxt: "OK",
-        btnFunc: () => fallBackToDefaultLogin(),
-      });
-    }
-
-    let supportedBiometric;
-    if (isBiometricAvailable) {
-      supportedBiometric =
-        await LocalAuthentication.supportedAuthenticationTypesAsync();
+      return showAlert(
+        "Please enter your credentials",
+        "Biometric authentication is not supported",
+        "OK",
+        fallBackToDefaultLogin
+      );
     }
 
     const savedBiometric = await LocalAuthentication.isEnrolledAsync();
     if (!savedBiometric) {
-      return alertComponent({
-        title: "Please enter your credentials",
-        message: "Biometric authentication is not enrolled",
-        btnTxt: "OK",
-        btnFunc: () => fallBackToDefaultLogin(),
-      });
+      return showAlert(
+        "Please enter your credentials",
+        "Biometric authentication is not enrolled",
+        "OK",
+        fallBackToDefaultLogin
+      );
     }
+
     const biometricAuth = await LocalAuthentication.authenticateAsync({
       promptMessage: "Login to Transaction History app with biometric",
       cancelLabel: "Cancel",
@@ -92,11 +80,12 @@ const LoginScreen: React.FC<LoginScreenProps> = () => {
   };
 
   useEffect(() => {
-    async () => {
+    const checkBiometricSupport = async () => {
       const compatible = await LocalAuthentication.hasHardwareAsync();
       setIsBiometricSupported(compatible);
     };
-  });
+    checkBiometricSupport();
+  }, []);
 
   return (
     <View style={styles.container}>
