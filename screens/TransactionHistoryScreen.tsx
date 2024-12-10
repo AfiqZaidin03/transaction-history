@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   StyleSheet,
   Text,
@@ -7,9 +7,11 @@ import {
   Image,
   ScrollView,
   TouchableOpacity,
+  Alert,
 } from "react-native";
 import transactions from "@/constants/transaction.json";
 import { useNavigation } from "@react-navigation/native";
+import * as LocalAuthentication from "expo-local-authentication";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { RootStackParamList, Transaction } from "@/types/transaction";
 
@@ -20,6 +22,7 @@ type TransactionHistoryScreenNavigationProp = StackNavigationProp<
 
 const TransactionHistoryScreen: React.FC = () => {
   const navigation = useNavigation<TransactionHistoryScreenNavigationProp>();
+  const [isBalanceVisible, setIsBalanceVisible] = useState(false);
 
   const renderItem = ({ item }: { item: Transaction }) => (
     <View style={styles.transactionItem}>
@@ -28,13 +31,82 @@ const TransactionHistoryScreen: React.FC = () => {
         <Text style={styles.transactionDate}>{item.date}</Text>
       </View>
       <Text style={styles.transactionAmount}>
-        {item.type === "debit" ? "-" : "+"}${item.amount.toFixed(2)}
+        {item.type === "debit" ? "-" : "+"}${Number(item.amount).toFixed(2)}
       </Text>
     </View>
   );
 
   const handleTransactionPress = (transaction: Transaction) => {
     navigation.navigate("TransactionDetail", { transaction });
+  };
+
+  interface AlertComponentProps {
+    title: string;
+    message: string;
+    btnTxt: string;
+    btnFunc: () => void;
+  }
+
+  const AlertComponent = ({
+    title,
+    message,
+    btnTxt,
+    btnFunc,
+  }: AlertComponentProps) => {
+    return Alert.alert(title, message, [{ text: btnTxt, onPress: btnFunc }], {
+      cancelable: false,
+    });
+  };
+
+  const handleBiometricLogin = async () => {
+    const isBiometricAvailable = await LocalAuthentication.hasHardwareAsync();
+
+    if (!isBiometricAvailable) {
+      return AlertComponent({
+        title: "Please enter your credentials",
+        message: "Biometric authentication is not supported",
+        btnTxt: "OK",
+        btnFunc: () => fallBackToDefaultLogin(),
+      });
+    }
+
+    let supportedBiometric;
+    if (isBiometricAvailable) {
+      supportedBiometric =
+        await LocalAuthentication.supportedAuthenticationTypesAsync();
+    }
+
+    const savedBiometric = await LocalAuthentication.isEnrolledAsync();
+    if (!savedBiometric) {
+      return AlertComponent({
+        title: "Please enter your credentials",
+        message: "Biometric authentication is not enrolled",
+        btnTxt: "OK",
+        btnFunc: () => fallBackToDefaultLogin(),
+      });
+    }
+    const biometricAuth = await LocalAuthentication.authenticateAsync({
+      promptMessage: "Login to Transaction History app with biometric",
+      cancelLabel: "Cancel",
+      disableDeviceFallback: true,
+    });
+
+    return biometricAuth.success;
+  };
+
+  const fallBackToDefaultLogin = () => {
+    console.log("Fallback to default login");
+  };
+
+  const handleToggleBalanceVisibility = async () => {
+    if (!isBalanceVisible) {
+      const isAuthenticated = await handleBiometricLogin();
+      if (isAuthenticated) {
+        setIsBalanceVisible(true);
+      }
+    } else {
+      setIsBalanceVisible(false);
+    }
   };
 
   return (
@@ -50,14 +122,15 @@ const TransactionHistoryScreen: React.FC = () => {
           <Text style={styles.userName}>Muhammad Afiq</Text>
         </View>
       </View>
-
       {/* Balance Section */}
       <View style={styles.balanceSection}>
         <Text style={styles.balanceTitle}>Your Balance This Month</Text>
-        <Text style={styles.balanceAmount}>RM10,000.00</Text>
+        <TouchableOpacity onPress={handleToggleBalanceVisibility}>
+          <Text style={styles.balanceAmount}>
+            {isBalanceVisible ? "RM10,000.00" : "****"}
+          </Text>
+        </TouchableOpacity>
       </View>
-
-      {/* Savings Plan Section */}
       <View>
         <ScrollView
           horizontal
@@ -78,7 +151,6 @@ const TransactionHistoryScreen: React.FC = () => {
           </View>
         </ScrollView>
       </View>
-
       {/* Transaction History Section */}
       <View style={styles.transactionSection}>
         <Text style={styles.sectionTitle}>Transaction History</Text>
