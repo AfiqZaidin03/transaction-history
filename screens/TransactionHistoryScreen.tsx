@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useCallback } from "react";
 import {
   StyleSheet,
   Text,
@@ -8,6 +8,7 @@ import {
   ScrollView,
   TouchableOpacity,
   Alert,
+  RefreshControl,
 } from "react-native";
 import transactions from "@/constants/transaction.json";
 import { useNavigation } from "@react-navigation/native";
@@ -23,6 +24,13 @@ type TransactionHistoryScreenNavigationProp = StackNavigationProp<
 const TransactionHistoryScreen: React.FC = () => {
   const navigation = useNavigation<TransactionHistoryScreenNavigationProp>();
   const [isBalanceVisible, setIsBalanceVisible] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
+  const [transactionList, setTransactionList] = useState<Transaction[]>(
+    transactions.map((transaction) => ({
+      ...transaction,
+      type: transaction.type as "debit" | "credit",
+    }))
+  );
 
   const renderItem = ({ item }: { item: Transaction }) => (
     <View style={styles.transactionItem}>
@@ -109,6 +117,20 @@ const TransactionHistoryScreen: React.FC = () => {
     }
   };
 
+  const onRefresh = useCallback(() => {
+    setRefreshing(true);
+
+    setTimeout(() => {
+      setTransactionList(
+        transactions.map((transaction) => ({
+          ...transaction,
+          type: transaction.type as "debit" | "credit",
+        }))
+      );
+      setRefreshing(false);
+    }, 2000);
+  }, []);
+
   return (
     <View style={styles.container}>
       {/* Header */}
@@ -155,7 +177,7 @@ const TransactionHistoryScreen: React.FC = () => {
       <View style={styles.transactionSection}>
         <Text style={styles.sectionTitle}>Transaction History</Text>
         <FlatList
-          data={transactions as Transaction[]}
+          data={transactionList}
           renderItem={({ item }) => (
             <TouchableOpacity onPress={() => handleTransactionPress(item)}>
               {renderItem({ item })}
@@ -163,6 +185,9 @@ const TransactionHistoryScreen: React.FC = () => {
           )}
           keyExtractor={(item) => item.id.toString()}
           style={styles.transactionList}
+          refreshControl={
+            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+          }
         />
       </View>
     </View>
